@@ -1,0 +1,34 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require ('cors');
+
+//Importando o arquivo db.js
+const db = require('./db');
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static('public'));
+
+//CREATE (cadastro)
+app.post('/usuarios',(req, res)=>{
+    const {nome, email, telefone}=req.body;
+    const sql = 'INSERT INTO usuarios (nome, email, telefone)VALUES (?,?,?)';
+    db.query(sql,[nome, email, telefone], (err) => {
+        if(err)return res.status(500).json(err)
+        res.json({message: 'Usuário cadastrado com sucesso'})
+    })
+});
+//READ (listagem)
+app.get('/usuarios',(req, res)=>{
+    db.query('SELECT * FROM usuarios',(err,rows)=>{ 
+        if(err)return res.status(500).json(err);
+        res.json(rows)
+    });
+});
+app.listen(3000,()=> {
+    console.log('servidor rodando em http://localhost:3000');
+});
+
+
